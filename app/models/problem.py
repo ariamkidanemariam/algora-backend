@@ -1,10 +1,11 @@
 import uuid
 from sqlalchemy import String, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.database import Base
+from database import Base
 
 class Problem(Base):
     __tablename__ = "problems"
+  
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     topic_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("topics.id", ondelete="CASCADE"), nullable=False)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
