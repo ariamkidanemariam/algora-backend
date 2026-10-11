@@ -1,9 +1,15 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import String, Text, DateTime, ForeignKey
+from dns import enum
+from sqlalchemy import Enum, String, Text, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 
+
+class ProjectStatus(str, Enum):
+    NOT_STARTED = "NOT_STARTED"
+    IN_PROGRESS = "IN_PROGRESS"
+    COMPLETED = "COMPLETED"
 class Project(Base):
     __tablename__ = "projects"
     
@@ -11,7 +17,7 @@ class Project(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
-    status: Mapped[str] = mapped_column(String(30), default="NOT_STARTED", nullable=False)
+    status: Mapped[ProjectStatus] = mapped_column(Enum(ProjectStatus, name="project_status", values_callable=lambda enum_cls: [ member.value for member in enum_cls],), nullable=False, default=ProjectStatus.NOT_STARTED, nullable=False)
     live_url: Mapped[str | None] = mapped_column(String(500))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
